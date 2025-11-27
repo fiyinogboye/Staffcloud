@@ -61,8 +61,7 @@ int load_organization(const char *filename, Organization *org) {
 
         else {
             // Managers + Employees: include department
-            fscanf(fp, "%d %49s %49s %f %49s",
-                   &e->id, e->first, e->last, &e->salary, e->department);
+            fscanf(fp, "%d %49s %49s %f %49s", &e->id, e->first, e->last, &e->salary, e->department);
 
             if (i >= 1 && i <= 3) {
                 strcpy(e->role, "Manager");
