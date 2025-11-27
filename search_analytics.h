@@ -4,25 +4,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
+#include "employee.h"
+#define NAME_LENGTH NAME_LEN
+#define DEPT_LENGTH DEPART_LEN
 
-#define NAME_LENGTH 50
-#define DEPT_LENGTH 50
+// Find an employee by ID in an Organization
+Employee *findEmployeeById(Organization *org, int id);
+
+// Print a single employee
+void displayEmployee(const Employee *emp);
+
+// Search functions
+void searchEmployeesByName(const Organization *org, const char *name);
+void searchEmployeesByDepartment(const Organization *org, const char *department);
+void searchEmployeesBySalaryRange(const Organization *org,
+                                  float minSalary, float maxSalary);
 
 
-typedef struct Employee {
-	int id;
-	char name[NAME_LENGTH];
-	char department[DEPT_LENGTH];
-	double salary;
-	int manager_id;
-	struct Employee *next;
-}Employee;
 
-Employee* findEmployeeById(Employee **employees, int count, int id);
-void searchEmployeesByName(Employee **employees, int count, const char *name);
-void searchEmployeesByDepartment(Employee **employees, int count, const char *department);
-void searchEmployeesBySalaryRange(Employee **employees, int count, double minSalary, double maxSalary);
-void displayEmployee(Employee *emp);
 
 #endif
 
