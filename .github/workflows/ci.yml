@@ -1,0 +1,25 @@
+name: build StaffCloud
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build StaffCloud
+        run: gcc -Wall -Wextra -std=c11 -o staffcloud *.c
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: StaffCloud
+          path: ./staffcloud
+
