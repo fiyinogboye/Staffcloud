@@ -1,93 +1,126 @@
-#include "search_analytics.h"
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-Employee* findEmployeeById (Employee **employee, int count,int id){
-	for (int i= 1; i<count; i++){
-		if (employee[i] != NULL && employee[i] -> id ==id) {
-			return employee[i];
-		}
+#include "employee.h" 
 
-	}
-	return NULL;
-}
-
-void displayEmployee( Employee *emp){
-	if (emp == NULL){
-		printf("No employee found.\n");
-	}
-	printf("ID: %d\n", emp -> id);
-	printf("Name: %s\n", emp -> name);
-	printf("Department: %s\n", emp -> department);
-    	printf("Salary: $%.2f\n", emp -> salary);
-    	printf("Manager ID: %d\n", emp -> manager_id);
-}
-
-int stringContains(const char *str, const char *substr) {
+//case-insensitive substring check
+static int stringContains(const char *str, const char *substr) {
     if (str == NULL || substr == NULL) return 0;
 
-    char strLower[NAME_LENGTH];
-    char substrLower[NAME_LENGTH];
+    // Make lowercase copies
+    char strLower[128];
+    char substrLower[128];
 
-    //case-insensitive search
-    for (int i = 0; str[i]; i++) {
-        strLower[i] = tolower(str[i]);
+    size_t i = 0;
+    for (; str[i] && i < sizeof(strLower) - 1; i++) {
+        strLower[i] = (char)tolower((unsigned char)str[i]);
     }
-    strLower[strlen(str)] = '\0';
+    strLower[i] = '\0';
 
-    for (int i = 0; substr[i]; i++) {
-        substrLower[i] = tolower(substr[i]);
+    for (i = 0; substr[i] && i < sizeof(substrLower) - 1; i++) {
+        substrLower[i] = (char)tolower((unsigned char)substr[i]);
     }
-    substrLower[strlen(substr)] = '\0';
+    substrLower[i] = '\0';
 
     return strstr(strLower, substrLower) != NULL;
 }
 
+// Find an employee by ID in an Organization
+Employee *findEmployeeById(Organization *org, int id) {
+    if (!org || !org->list) return NULL;
 
-void searchEmployeesByName (Employee **employees, int count,const char *name ){
-	int found =0;
-	for (int i =0; i < count; i++){
-		if (employees !=NULL && stringContains(employees[i] -> name, name)){
-			printf ("%d\n match(s)", ++found);
-			displayEmployee(employees[i]);
-		}
-	}
-	printf("No employee with that name found");
-
-			
+    for (int i = 0; i < org->count; i++) {
+        Employee *e = &org->list[i];
+        if (e->id == id) {
+            return e;
+        }
+    }
+    return NULL;
 }
 
+// Print a single employee's info
 
-void searchEmployeesByDepartment(Employee **employees, int count, const char *department) {
-	int found = 0;
+void displayEmployee(const Employee *emp) {
+    if (emp == NULL) {
+        printf("No employee found.\n");
+        return;
+    }
 
-	for (int i = 0; i < count; i++) {
-        	if (employees[i] != NULL && stringContains(employees[i]->department, department)) {
-            		printf("Employee %d:\n", ++found);
-            		displayEmployee(employees[i]);
-        	}
-    	}
-
-    	if (found == 0) {
-        	printf("No employees found in department '%s'\n", department);
-    } 
+    printf("ID: %d\n", emp -> id);
+    printf("Name: %s, %s\n", emp -> first, emp -> last);
+    printf("Department: %s\n", emp -> department);
+    printf("Salary: $%.2f\n", emp -> salary);
+    printf("Role: %s\n", emp -> role);
 }
 
+// Search by (first OR last) name
+void searchEmployeesByName(const Organization *org, const char *name) {
+    if (!org || !org->list) {
+        printf("Organization is empty.\n");
+        return;
+    }
 
-void searchEmployeesBySalaryRange(Employee **employees, int count, double minSalary, double maxSalary) {
+    int found = 0;
 
-	int found = 0;
+    for (int i = 0; i < org->count; i++) {
+        const Employee *e = &org->list[i];
 
-	for (int i = 0; i < count; i++) {
-		if (employees[i] != NULL && employees[i]->salary >= minSalary && employees[i]->salary <= maxSalary) {
-            		printf("Employee %d:\n", ++found);
-            		displayEmployee(employees[i]);
-        	}
-    	}
+        if (stringContains(e->first, name) || stringContains(e->last, name)) {
+            printf("Match %d:\n", ++found);
+            displayEmployee(e);
+        }
+    }
 
-    	if (found == 0) {
-        	printf("No employees found in salary range $%.2f - $%.2f\n", minSalary, maxSalary);
-    	} 
+    if (found == 0) {
+        printf("No employees with name containing '%s' were found.\n", name);
+    }
+}
+
+// Search by department
+void searchEmployeesByDepartment(const Organization *org, const char *department) {
+    if (!org || !org->list) {
+        printf("Organization is empty.\n");
+        return;
+    }
+
+    int found = 0;
+
+    for (int i = 0; i < org->count; i++) {
+        const Employee *e = &org->list[i];
+
+        if (stringContains(e->department, department)) {
+            printf("Employee %d:\n", ++found);
+            displayEmployee(e);
+        }
+    }
+
+    if (found == 0) {
+        printf("No employees found in department '%s'.\n", department);
+    }
+}
+
+// Search by salary range (salary is float in your loader code)
+void searchEmployeesBySalaryRange(const Organization *org,
+                                  float minSalary, float maxSalary) {
+    if (!org || !org->list) {
+        printf("Organization is empty.\n");
+        return;
+    }
+
+    int found = 0;
+
+    for (int i = 0; i < org->count; i++) {
+        const Employee *e = &org->list[i];
+
+        if (e->salary >= minSalary && e->salary <= maxSalary) {
+            printf("Employee %d:\n", ++found);
+            displayEmployee(e);
+        }
+    }
+
+    if (found == 0) {
+        printf("No employees found in salary range %.2f - %.2f\n",
+               minSalary, maxSalary);
+    }
 }
