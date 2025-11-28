@@ -6,52 +6,178 @@
  * AUTHOR: Fiyin Ogboye
  */
 #include <stdio.h>
-#include "hierarchy.h"
+#include <stdlib.h>
+#include <string.h>
 
-int main() {
-    
-    // NOTE: We assume the full team's Employee struct definition has 10 fields 
-    // due to fields added by other team members (like David or Ifeyinwa).
-    // We add two extra initializers (NULL, 0) to ensure the compiler is satisfied.
-    Employee list[5] = {
-        // [1] ID  [2] Name  [3] Role  [4] Salary  [5] MgrID [6] MgrPtr [7] ChildPtr [8] ChildCount [9] ExtraPtr [10] ExtraInt
-        {100, "CEO Alice", "CEO", 250000.0, -1, NULL, NULL, 0, NULL, 0},
-        {201, "Manager Bob", "Sales Mgr", 120000.0, 100, NULL, NULL, 0, NULL, 0},
-        {202, "Manager Carol", "HR Mgr", 110000.0, 100, NULL, NULL, 0, NULL, 0},
-        {301, "Employee Dave", "Sales", 75000.0, 201, NULL, NULL, 0, NULL, 0},
-        {302, "Employee Eve", "HR", 72000.0, 202, NULL, NULL, 0, NULL, 0}
-    };
+#include "employee.h"
+#include "search.h"      // your SEARCH_ANALYTICS_H header
+#include "hierarchy.h"   // hierarchy functions
 
-    printf("--- StaffCloud Hierarchy Test (Fiyin Ogboye) ---\n");
-    
-    // 1. Build the hierarchy links (sets manager pointers and dynamic children arrays)
-    build_hierarchy(list, 5);
+// Small helper to clear leftover characters from stdin
+static void clear_stdin(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) {
+        /* throw away */ ;
+    }
+}
 
-    Employee *ceo = find_ceo(list, 5);
-
-    if (ceo) {
-        printf("\n--- Organizational Chart ---\n");
-        print_org_chart(ceo, 0);
-
-        // 2. Test Navigation and Chain of Command
-        printf("\n--- Test: Chain of Command for Employee Dave ---\n");
-        Employee *dave = find_by_id(list, 5, 301);
-        if (dave) {
-            print_chain_of_command(dave);
-        }
-        
-        printf("\n--- Test: Direct Reports of CEO Alice ---\n");
-        list_children(ceo);
-
-    } else {
-        printf("\nERROR: CEO not found in the list. Hierarchy build failed.\n");
-        // Clean up even if the build failed
-        cleanup_hierarchy(list, 5);
+int main(int argc, char *argv[]) {
+    if (argc != 2) {
+        printf("Usage: %s <organization_file>\n", argv[0]);
         return 1;
     }
 
-    // 4. REQUIRED STEP: Clean up all dynamically allocated memory
-    cleanup_hierarchy(list, 5);
+    const char *filename = argv[1];
+    Organization org;
 
+    // 1) Load all employees from file into org.list
+    if (load_organization(filename, &org) != 0) {
+        printf("Failed to load organization from file: %s\n", filename);
+        return 1;
+    }
+
+    printf("Loaded organization from '%s'.\n", filename);
+    print_organization(&org);
+
+    // 2) Build the hierarchy (manager / children pointers)
+    build_hierarchy(org.list, org.count);
+
+    int choice = 0;
+    while (1) {
+        printf("\n================ StaffCloud Menu ================\n");
+        printf("1) Print all employees\n");
+        printf("2) Search employee by ID\n");
+        printf("3) Search employees by name\n");
+        printf("4) Search employees by department\n");
+        printf("5) Search employees by salary range\n");
+        printf("6) Show full organization chart (from CEO)\n");
+        printf("7) Show chain of command for an employee (by ID)\n");
+        printf("8) Exit\n");
+        printf("Enter choice (1-8): ");
+
+        if (scanf("%d", &choice) != 1) {
+            printf("Invalid input. Exiting.\n");
+            break;
+        }
+        clear_stdin();
+
+        if (choice == 8) {
+            break;
+        }
+
+        switch (choice) {
+        case 1: { // Print all employees
+            print_organization(&org);
+            break;
+        }
+
+        case 2: { // Search by ID
+            int id;
+            printf("Enter employee ID: ");
+            if (scanf("%d", &id) != 1) {
+                printf("Invalid ID.\n");
+                clear_stdin();
+                break;
+            }
+            clear_stdin();
+
+            Employee *e = findEmployeeById(&org, id);
+            if (e) {
+                printf("\nEmployee found:\n");
+                displayEmployee(e);
+            } else {
+                printf("No employee with ID %d.\n", id);
+            }
+            break;
+        }
+
+        case 3: { // Search by name
+            char name[64];
+            printf("Enter part of first or last name: ");
+            if (!fgets(name, sizeof(name), stdin)) {
+                printf("Input error.\n");
+                break;
+            }
+            name[strcspn(name, "\n")] = '\0';  // remove newline
+            searchEmployeesByName(&org, name);
+            break;
+        }
+
+        case 4: { // Search by department
+            char dept[64];
+            printf("Enter part of department name: ");
+            if (!fgets(dept, sizeof(dept), stdin)) {
+                printf("Input error.\n");
+                break;
+            }
+            dept[strcspn(dept, "\n")] = '\0';  // remove newline
+            searchEmployeesByDepartment(&org, dept);
+            break;
+        }
+
+        case 5: { // Search by salary range
+            float minS, maxS;
+            printf("Enter minimum salary: ");
+            if (scanf("%f", &minS) != 1) {
+                printf("Invalid value.\n");
+                clear_stdin();
+                break;
+            }
+            printf("Enter maximum salary: ");
+            if (scanf("%f", &maxS) != 1) {
+                printf("Invalid value.\n");
+                clear_stdin();
+                break;
+            }
+            clear_stdin();
+
+            searchEmployeesBySalaryRange(&org, minS, maxS);
+            break;
+        }
+
+        case 6: { // Org chart from CEO
+            Employee *ceo = find_ceo(org.list, org.count);
+            if (!ceo && org.count > 0) {
+                ceo = &org.list[0]; // fallback
+            }
+            if (ceo) {
+                printf("\n=== Organization Chart ===\n");
+                print_org_chart(ceo, 0);
+            } else {
+                printf("No CEO / employees found.\n");
+            }
+            break;
+        }
+
+        case 7: { // Chain of command for an employee
+            int id;
+            printf("Enter employee ID: ");
+            if (scanf("%d", &id) != 1) {
+                printf("Invalid ID.\n");
+                clear_stdin();
+                break;
+            }
+            clear_stdin();
+
+            Employee *e = find_by_id(org.list, org.count, id);
+            if (!e) {
+                printf("No employee with ID %d.\n", id);
+            } else {
+                print_chain_of_command(e);
+            }
+            break;
+        }
+
+        default:
+            printf("Please choose a number between 1 and 8.\n");
+            break;
+        } // end switch
+    } // end while
+
+    // 3) Clean up hierarchy + organization memory
+    cleanup_hierarchy(org.list, org.count);
+    free_organization(&org);
+
+    printf("Goodbye!\n");
     return 0;
 }

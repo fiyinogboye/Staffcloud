@@ -1,76 +1,96 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/hierarchy.h"
+#include "hierarchy.h"
 
-// Finds the CEO (the root of the hierarchy).
-// The CEO is identified by having a manager_id of -1.
+
+// Helper to print "First Last" nicely
+static void print_employee_name(const Employee *e) {
+    printf("%s %s", e->first, e->last);
+}
+
+// Find the CEO: by convention, manager_id == -1
 Employee *find_ceo(Employee *list, int count) {
+    if (!list) return NULL;
+
     for (int i = 0; i < count; i++) {
         if (list[i].manager_id == -1) {
             return &list[i];
         }
     }
-    return NULL; 
+    return NULL;
 }
 
-// Iterates through the list and calls free() on the 'children' arrays 
-// that were allocated using realloc in build_hierarchy.
+// Free children arrays allocated in build_hierarchy
 void cleanup_hierarchy(Employee *list, int count) {
+    if (!list) return;
+
     for (int i = 0; i < count; i++) {
-        // Only managers/CEO (who have children) will have non-NULL memory to free
         if (list[i].children != NULL) {
             free(list[i].children);
-            list[i].children = NULL; // Reset pointer after freeing
-            list[i].child_count = 0;
+            list[i].children = NULL;
         }
+        list[i].child_count = 0;
+        list[i].manager = NULL;
     }
-    printf("\n--- Memory for all children arrays has been cleaned up . ---\n");
+    printf("\n--- Memory for hierarchy children arrays has been cleaned up. ---\n");
 }
 
-// Constructs the hierarchy by linking managers and subordinates.
+// Build a simple hierarchy:
+//  - find the CEO (role == "CEO")
+//  - CEO gets manager_id = -1
+//  - everyone else gets manager_id = CEO's id
+//  - set manager / children accordingly
 void build_hierarchy(Employee *list, int count) {
-    // PASS 1: Initialize pointers and set Upward (manager) links
-    for (int i = 0; i < count; i++) {
-        // Reset dynamic child array pointers
-        list[i].children = NULL;
-        list[i].child_count = 0;
+    if (!list || count <= 0) return;
 
-        if (list[i].manager_id == -1) {
-            list[i].manager = NULL;  // CEO (Root)
-        } else {
-            list[i].manager = NULL;
-            // Search for the manager by ID
-            for (int j = 0; j < count; j++) {
-                if (list[j].id == list[i].manager_id) {
-                    list[i].manager = &list[j]; // Set upward link
-                    break;
-                }
-            }
-            if (list[i].manager == NULL) {
-                // Critical error handling: should not occur with clean data
-                fprintf(stderr, "Error: Manager ID %d for employee %s not found in list.\n", 
-                        list[i].manager_id, list[i].name);
-            }
+    // 1) Find CEO by role
+    Employee *ceo = NULL;
+    for (int i = 0; i < count; i++) {
+        if (strcmp(list[i].role, "CEO") == 0) {
+            ceo = &list[i];
+            break;
         }
     }
-    
-    // PASS 2: Set Downward (children) links using dynamic memory (realloc)
-    // We use realloc here because we don't know the final number of reports a manager will have.
-    for (int i = 0; i < count; i++) {
-        if (list[i].manager != NULL) {
-            Employee *boss = list[i].manager;
 
-            // 1. Increment count and use realloc to expand the memory block
-            boss->child_count++;
-            boss->children = realloc(
-                boss->children, 
-                boss->child_count * sizeof(Employee *) // New size in bytes
-            );
-            
-            // 2. Add the pointer to the current employee to the expanded array
-            boss->children[boss->child_count - 1] = &list[i];
+    if (!ceo) {
+        fprintf(stderr, "Warning: no CEO found (role == \"CEO\"). Using first employee as CEO.\n");
+        ceo = &list[0];
+    }
+
+    // 2) Initialize all hierarchy fields
+    for (int i = 0; i < count; i++) {
+        list[i].children    = NULL;
+        list[i].child_count = 0;
+        list[i].manager     = NULL;
+        list[i].manager_id  = ceo->id;  // temporary; we'll fix CEO next
+    }
+
+    // CEO has no manager
+    ceo->manager_id = -1;
+    ceo->manager    = NULL;
+
+    // 3) Second pass: build children arrays using manager pointers
+    for (int i = 0; i < count; i++) {
+        Employee *e = &list[i];
+
+        // Skip CEO (no manager)
+        if (e == ceo) continue;
+
+        // For this simple version, everyone reports to CEO
+        e->manager = ceo;
+
+        // Grow CEO's children array with realloc
+        ceo->child_count++;
+        ceo->children = realloc(ceo->children,
+                                ceo->child_count * sizeof(Employee *));
+        if (!ceo->children) {
+            fprintf(stderr, "Error: realloc failed in build_hierarchy.\n");
+            ceo->child_count = 0;
+            return;
         }
+
+        ceo->children[ceo->child_count - 1] = e;
     }
 }
 
@@ -78,13 +98,14 @@ void build_hierarchy(Employee *list, int count) {
 void print_org_chart(Employee *e, int depth) {
     if (!e) return;
 
-    // spacing using two spaces per depth level to show depth
-    for (int i = 0; i < depth; i++)
-        printf("  ");
+    for (int i = 0; i < depth; i++) {
+        printf("  ");   // two spaces per depth level
+    }
 
-    printf("%s (%s, ID %d)\n", e->name, e->role, e->id);
+    printf("%s %s (%s, ID %d)\n",
+           e->first, e->last, e->role, e->id);
 
-    // Recursively call for all children
+    // Recurse over children
     for (int i = 0; i < e->child_count; i++) {
         print_org_chart(e->children[i], depth + 1);
     }
@@ -94,20 +115,25 @@ void print_org_chart(Employee *e, int depth) {
 void print_chain_of_command(Employee *e) {
     if (!e) return;
 
-    printf("Chain of command for %s:\n", e->name);
+    printf("Chain of command for ");
+    print_employee_name(e);
+    printf(":\n");
 
     Employee *curr = e;
     while (curr != NULL) {
-        printf(" -> %s (%s)\n", curr->name, curr->role);
-        curr = curr->manager; // Move up the hierarchy using the manager pointer
+        printf(" -> %s %s (%s)\n", curr->first, curr->last, curr->role);
+        curr = curr->manager;  // move up
     }
 }
 
-// Searches for an employee in the list by employee ID.
-Employee* find_by_id(Employee *list, int count, int id) {
+// Searches for an employee by ID in a flat list.
+Employee *find_by_id(Employee *list, int count, int id) {
+    if (!list) return NULL;
+
     for (int i = 0; i < count; i++) {
-        if (list[i].id == id)
+        if (list[i].id == id) {
             return &list[i];
+        }
     }
     return NULL;
 }
@@ -117,28 +143,26 @@ void list_children(Employee *e) {
     if (!e) return;
 
     if (e->child_count == 0) {
-        printf("%s has no direct reports.\n", e->name);
+        printf("%s %s has no direct reports.\n", e->first, e->last);
         return;
     }
 
-    printf("Direct reports of %s:\n", e->name);
+    printf("Direct reports of %s %s:\n", e->first, e->last);
     for (int i = 0; i < e->child_count; i++) {
-        printf("  [%d] %s (ID %d)\n",
-            i,
-            e->children[i]->name,
-            e->children[i]->id
-        );
+        Employee *child = e->children[i];
+        printf("  [%d] %s %s (ID %d, Role %s)\n",
+               i, child->first, child->last, child->id, child->role);
     }
 }
 
-// Returns the manager of the given employee (moves one level up).
-Employee* go_to_manager(Employee *e) {
+// Returns the manager of the given employee
+Employee *go_to_manager(Employee *e) {
     if (!e) return NULL;
     return e->manager;
 }
 
-// Returns the child at the given index in the children array (moves one level down).
-Employee* go_to_child(Employee *e, int index) {
+// Returns the child at the given index
+Employee *go_to_child(Employee *e, int index) {
     if (!e) return NULL;
     if (index < 0 || index >= e->child_count) return NULL;
     return e->children[index];
