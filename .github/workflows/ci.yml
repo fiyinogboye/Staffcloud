@@ -2,10 +2,9 @@ name: build StaffCloud
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "Data_Management_Specialist" ]
   pull_request:
-    branches: [ "main" ]
-
+    branches: [ "Data_Management_Specialist"]
 jobs:
   build:
     runs-on: ubuntu-latest
