@@ -12,44 +12,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct Employee {
-    int id;
-    const char *name;
-    const char *role;
-    double salary;
-    int manager_id; // ID used to link employees when loading from file
-
-    struct Employee *manager;      // Upward link: Pointer to the direct manager
-    
-    // Dynamic Memory: Array of pointers to subordinates (required for constraint)
-    struct Employee **children;    
-    int child_count;               // Current number of direct reports
-} Employee;
+#include "employee.h"   // <-- important
 
 Employee *find_ceo(Employee *list, int count);
-
-// Links managers (upward pointers) and subordinates.
-void build_hierarchy(Employee *list, int count);
-
-// Frees the memory allocated for the 'children' arrays .
-void cleanup_hierarchy(Employee *list, int count);
-
-// Recursively prints the organizational chart with indentation.
-void print_org_chart(Employee *e, int depth);
-
-// Prints the reporting chain from a given employee up to the CEO.
-void print_chain_of_command(Employee *e);
-
-// Searches the employee list by ID.
-Employee* find_by_id(Employee *list, int count, int id);
-
-// Prints the direct reports of a specific manager.
-void list_children(Employee *e);
-
-// Returns the manager of the given employee (moves one level up).
-Employee* go_to_manager(Employee *e);
-
-// Returns the child at the given index (used for navigating down the reports).
-Employee* go_to_child(Employee *e, int index);
+void      cleanup_hierarchy(Employee *list, int count);
+void      build_hierarchy(Employee *list, int count);
+void      print_org_chart(Employee *e, int depth);
+void      print_chain_of_command(Employee *e);
+Employee *find_by_id(Employee *list, int count, int id);
+void      list_children(Employee *e);
+Employee *go_to_manager(Employee *e);
+Employee *go_to_child(Employee *e, int index);
 
 #endif
+
