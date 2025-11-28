@@ -176,7 +176,6 @@ int main(int argc, char *argv[]) {
 
     //cleans up hierarchy and organization memory
     cleanup_hierarchy(org.list, org.count);
-    free_organization(&org);
 
     printf("Goodbye!\n");
     return 0;

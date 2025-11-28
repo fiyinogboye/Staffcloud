@@ -1,4 +1,4 @@
-1001 Alice Thompson 150000 CEO
+1001 Alice Thompson 150000 
 2001 Brian Lee 95000 Sales
 2002 Priya Sharma 97000 HR
 2003 David Kim 93000 IT

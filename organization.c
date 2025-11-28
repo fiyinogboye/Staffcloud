@@ -53,8 +53,11 @@ int load_organization(const char *filename, Organization *org) {
 
         if (i == 0) {
         // CEO: no department
-            fscanf(fp, "%d %49s %49s %f",
-                   &e->id, e->first, e->last, &e->salary);
+            fscanf(fp, "%d %49s %49s %f",&e->id, e->first, e->last, &e->salary);
+            e->manager_id = -1;   
+            e->manager    = NULL;
+            e->children   = NULL;
+            e->child_count = 0;
             strcpy(e->role, "CEO");
             strcpy(e->department, "None");
         }
@@ -62,7 +65,10 @@ int load_organization(const char *filename, Organization *org) {
         else {
             // Managers + Employees: include department
             fscanf(fp, "%d %49s %49s %f %49s", &e->id, e->first, e->last, &e->salary, e->department);
-
+            e->manager_id = -1;   
+            e->manager    = NULL;
+            e->children   = NULL;
+            e->child_count = 0;
             if (i >= 1 && i <= 3) {
                 strcpy(e->role, "Manager");
             } 

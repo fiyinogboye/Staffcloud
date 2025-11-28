@@ -1,4 +1,4 @@
-1001 Emilia Wright 151900 CEO
+1001 Emilia Wright 151900 
 2001 Brady Knox 94500 Sales
 2002 Clara Hale 96800 HR
 2003 Nolan Hayes 94000 IT

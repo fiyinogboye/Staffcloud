@@ -1,4 +1,4 @@
-1001 Mason Turner 152000 CEO
+1001 Mason Turner 152000 
 2001 Liam Hayes 94000 Marketing
 2002 Ava Collins 96000 Human_Resources
 2003 Mateo Silva 91000 Information_Technology
