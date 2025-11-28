@@ -3,22 +3,58 @@
 #include <string.h>
 #include "hierarchy.h"
 
-
-// Helper to print "First Last" nicely
+// Helper to print "First Last"
 static void print_employee_name(const Employee *e) {
+    if (!e) return;
     printf("%s %s", e->first, e->last);
 }
 
-// Find the CEO: by convention, manager_id == -1
-Employee *find_ceo(Employee *list, int count) {
-    if (!list) return NULL;
+// Helper: grow a manager's children array and add one child
+static void add_child(Employee *manager, Employee *child) {
+    if (!manager || !child) return;
 
+    int new_count = manager->child_count + 1;
+
+    Employee **new_children = realloc(manager->children,
+                                      new_count * sizeof(Employee *));
+    if (!new_children) {
+        fprintf(stderr, "Error: not enough memory in add_child.\n");
+        return;
+    }
+
+    manager->children = new_children;
+    manager->children[manager->child_count] = child;
+    manager->child_count = new_count;
+}
+
+/*
+ * Find the CEO.
+ * Rule:
+ *   1) First try: role == "CEO"
+ *   2) If none found: any employee with manager_id == -1
+ *   3) If still none and list not empty: fall back to list[0]
+ */
+Employee *find_ceo(Employee *list, int count) {
+    if (!list || count <= 0) {
+        return NULL;
+    }
+
+    // 1) Look for role == "CEO"
+    for (int i = 0; i < count; i++) {
+        if (strcmp(list[i].role, "CEO") == 0) {
+            return &list[i];
+        }
+    }
+
+    // 2) Look for manager_id == -1
     for (int i = 0; i < count; i++) {
         if (list[i].manager_id == -1) {
             return &list[i];
         }
     }
-    return NULL;
+
+    // 3) Fallback: just return the first employee
+    return &list[0];
 }
 
 // Free children arrays allocated in build_hierarchy
@@ -33,79 +69,72 @@ void cleanup_hierarchy(Employee *list, int count) {
         list[i].child_count = 0;
         list[i].manager = NULL;
     }
-    printf("\n--- Memory for hierarchy children arrays has been cleaned up. ---\n");
+    printf("\nMemory used for hierarchy (children arrays) has been cleaned up.\n");
 }
 
-// Build a simple hierarchy:
-//  - find the CEO (role == "CEO")
-//  - CEO gets manager_id = -1
-//  - everyone else gets manager_id = CEO's id
-//  - set manager / children accordingly
+/*
+ * Build the hierarchy using David's loaded data.
+ *       - Find their manager using manager_id
+ *       - Set e->manager pointer
+ *       - Add e to manager->children list
+ */
 void build_hierarchy(Employee *list, int count) {
     if (!list || count <= 0) return;
 
-    // 1) Find CEO by role
-    Employee *ceo = NULL;
+    // 1) Clear all links 
     for (int i = 0; i < count; i++) {
-        if (strcmp(list[i].role, "CEO") == 0) {
-            ceo = &list[i];
-            break;
-        }
-    }
-
-    if (!ceo) {
-        fprintf(stderr, "Warning: no CEO found (role == \"CEO\"). Using first employee as CEO.\n");
-        ceo = &list[0];
-    }
-
-    // 2) Initialize all hierarchy fields
-    for (int i = 0; i < count; i++) {
+        list[i].manager     = NULL;
         list[i].children    = NULL;
         list[i].child_count = 0;
-        list[i].manager     = NULL;
-        list[i].manager_id  = ceo->id;  // temporary; we'll fix CEO next
     }
 
-    // CEO has no manager
-    ceo->manager_id = -1;
-    ceo->manager    = NULL;
-
-    // 3) Second pass: build children arrays using manager pointers
+    // 2) For each employee, hook them to their manager using manager_id
     for (int i = 0; i < count; i++) {
         Employee *e = &list[i];
 
-        // Skip CEO (no manager)
-        if (e == ceo) continue;
-
-        // For this simple version, everyone reports to CEO
-        e->manager = ceo;
-
-        // Grow CEO's children array with realloc
-        ceo->child_count++;
-        ceo->children = realloc(ceo->children,
-                                ceo->child_count * sizeof(Employee *));
-        if (!ceo->children) {
-            fprintf(stderr, "Error: realloc failed in build_hierarchy.\n");
-            ceo->child_count = 0;
-            return;
+        // Top-level person (CEO or top) has manager_id == -1
+        if (e->manager_id == -1) {
+            e->manager = NULL;
+            continue;
         }
 
-        ceo->children[ceo->child_count - 1] = e;
+        // Find the manager in the list: someone whose id == e->manager_id
+        Employee *mgr = NULL;
+        for (int j = 0; j < count; j++) {
+            if (list[j].id == e->manager_id) {
+                mgr = &list[j];
+                break;
+            }
+        }
+
+        if (!mgr) {
+            // manager_id didn't match anyone – just skip linking
+            fprintf(stderr,
+                    "Warning: no manager with id %d for employee %d\n",
+                    e->manager_id, e->id);
+            continue;
+        }
+
+        // Link this employee to their manager
+        e->manager = mgr;
+
+        // Add this employee as a child of the manager
+        add_child(mgr, e);
     }
 }
 
-// Recursively prints the organizational chart with indentation.
+// prints the organizational chart 
 void print_org_chart(Employee *e, int depth) {
     if (!e) return;
 
     for (int i = 0; i < depth; i++) {
-        printf("  ");   // two spaces per depth level
+        printf("  ");   
     }
 
     printf("%s %s (%s, ID %d)\n",
            e->first, e->last, e->role, e->id);
 
-    // Recurse over children
+    // Print children (direct reports)
     for (int i = 0; i < e->child_count; i++) {
         print_org_chart(e->children[i], depth + 1);
     }
@@ -122,7 +151,7 @@ void print_chain_of_command(Employee *e) {
     Employee *curr = e;
     while (curr != NULL) {
         printf(" -> %s %s (%s)\n", curr->first, curr->last, curr->role);
-        curr = curr->manager;  // move up
+        curr = curr->manager; 
     }
 }
 
@@ -138,7 +167,7 @@ Employee *find_by_id(Employee *list, int count, int id) {
     return NULL;
 }
 
-// Prints the direct reports of an employee (uses the children array).
+// Prints the direct reports of an employee 
 void list_children(Employee *e) {
     if (!e) return;
 
