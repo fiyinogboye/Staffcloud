@@ -6,6 +6,13 @@
 #include "search.h"     
 #include "hierarchy.h" 
 
+void print_full_help(void) {
+    printf("StaffCloud Employee Management System\n");
+    printf("Usage: ./staffcloud <organization_file>\n\n");
+    printf("<organization_file> is a text file containing employee data.\n");
+    printf("Use --help or -h to show this message.\n\n");
+}
+
 // Small helper to clear leftover characters
 static void clear_stdin() {
     int c;
@@ -16,11 +23,18 @@ static void clear_stdin() {
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        printf("Usage: %s <organization_file>\n", argv[0]);
+        printf("Usage: %s <organization_file> | --help\n", argv[0]);
         return 1;
     }
 
-    const char *filename = argv[1];
+    const char *arg = argv[1];
+
+    if (strcmp(arg, "--help") == 0 || strcmp(arg, "-h") == 0) {
+        print_full_help();
+        return 0;
+    }
+
+    const char *filename = arg;
     Organization org;
 
     //Load all employees from file into org.list
@@ -99,6 +113,7 @@ int main(int argc, char *argv[]) {
             searchEmployeesByName(&org, name);
             break;
         }
+
         // Search by department
         case 4: { 
             char dept[64];
