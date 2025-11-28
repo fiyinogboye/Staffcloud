@@ -3,6 +3,8 @@
 #include <string.h>
 #include "hierarchy.h"
 
+
+
 // Helper to print "First Last"
 static void print_employee_name(const Employee *e) {
     if (!e) return;
@@ -135,6 +137,7 @@ void print_org_chart(Employee *e, int depth) {
            e->first, e->last, e->role, e->id);
 
     // Print children (direct reports)
+
     for (int i = 0; i < e->child_count; i++) {
         print_org_chart(e->children[i], depth + 1);
     }
@@ -163,11 +166,14 @@ Employee *find_by_id(Employee *list, int count, int id) {
         if (list[i].id == id) {
             return &list[i];
         }
+
     }
     return NULL;
 }
 
+
 // Prints the direct reports of an employee 
+
 void list_children(Employee *e) {
     if (!e) return;
 
@@ -186,9 +192,11 @@ void list_children(Employee *e) {
 
 // Returns the manager of the given employee
 Employee *go_to_manager(Employee *e) {
+
     if (!e) return NULL;
     return e->manager;
 }
+
 
 // Returns the child at the given index
 Employee *go_to_child(Employee *e, int index) {
@@ -196,3 +204,4 @@ Employee *go_to_child(Employee *e, int index) {
     if (index < 0 || index >= e->child_count) return NULL;
     return e->children[index];
 }
+

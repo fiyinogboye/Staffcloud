@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "employee.h"   // <-- important
 
 Employee *find_ceo(Employee *list, int count);
@@ -24,3 +25,4 @@ Employee *go_to_manager(Employee *e);
 Employee *go_to_child(Employee *e, int index);
 
 #endif
+
