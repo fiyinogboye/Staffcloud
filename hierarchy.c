@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/hierarchy.h"
+#include "hierarchy.h"
 
 // Finds the CEO (the root of the hierarchy).
 // The CEO is identified by having a manager_id of -1.
