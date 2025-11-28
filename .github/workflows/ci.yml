@@ -22,7 +22,7 @@ jobs:
       - name: Run test suite
         run: |
           chmod +x test.sh
-          ./test.sh
+          ./test.sh tee test_results.txt
 
      
       - name: Generate gcov coverage reports
