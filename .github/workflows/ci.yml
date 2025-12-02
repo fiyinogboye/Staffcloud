@@ -36,5 +36,3 @@ jobs:
             *.gcov
             gcov_report.txt
             test_results.txt
-
-
