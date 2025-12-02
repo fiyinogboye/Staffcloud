@@ -36,10 +36,10 @@ jobs:
           path: |
             staffcloud
             *.gcov
-<<<<<<< HEAD
+
             gcov_report.txt
             test_results.txt
-=======
+
             *.gcda
             *.gcno
->>>>>>> acc90b7675e2461d9f8ba2da96e12ef477d7d70c
+
