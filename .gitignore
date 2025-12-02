@@ -1,11 +1,2 @@
-# compiled binary
-staffcloud
-
-# object files
 *.o
-
-# coverage artifacts
-*.gcda
-*.gcno
-*.gcov
-
+staffcloud

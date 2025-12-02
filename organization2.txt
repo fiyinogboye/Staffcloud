@@ -1,0 +1,24 @@
+1001 Mason Turner 152000 
+2001 Liam Hayes 94000 Marketing
+2002 Ava Collins 96000 Human_Resources
+2003 Mateo Silva 91000 Information_Technology
+3001 Zoe Barrett 54000 Marketing
+3002 Ivy Morgan 52500 Marketing
+3003 Rowan Blake 51500 Marketing
+3004 Piper James 53000 Marketing
+3005 Kian Brooks 54500 Marketing
+3006 Elise Harper 55800 Marketing
+3007 Aria Soto 57200 Marketing
+3008 Derek Lane 58200 Marketing
+3009 Caleb Frost 59500 Marketing
+3010 Mila Bowen 60500 Marketing
+3011 Sienna Cruz 61800 Human_Resources
+3012 Rory Chen 62800 Human_Resources
+3013 Tessa Vaughn 64200 Human_Resources
+3014 Julian Reyes 65500 Human_Resources
+3015 Kyra Walton 66200 Human_Resources
+3016 Orion Hale 67400 Information_Technology
+3017 Lana Pierce 68500 Information_Technology
+3018 Felix Monroe 69500 Information_Technology
+3019 Naomi Ellis 70500 Information_Technology
+3020 Ezra Donovan 71500 Information_Technolog

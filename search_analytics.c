@@ -124,3 +124,34 @@ void searchEmployeesBySalaryRange(const Organization *org,
                minSalary, maxSalary);
     }
 }
+
+// Find and display the lowest and highest paid employees
+void findHighestAndLowestSalary(const Organization *org) {
+    if (!org || !org->list || org->count == 0) {
+        printf("Organization is empty.\n");
+        return;
+    }
+
+    //assumes the first employee is both min and max
+    const Employee *minEmp = &org->list[0];
+    const Employee *maxEmp = &org->list[0];
+
+    
+    for (int i = 1; i < org->count; i++) {
+        const Employee *e = &org->list[i];
+
+        if (e->salary < minEmp->salary) {
+            minEmp = e;
+        }
+        if (e->salary > maxEmp->salary) {
+            maxEmp = e;
+        }
+    }
+
+    printf("\nLowest paid employee:\n");
+    displayEmployee(minEmp);
+
+    printf("\nHighest paid employee:\n");
+    displayEmployee(maxEmp);
+}
+
