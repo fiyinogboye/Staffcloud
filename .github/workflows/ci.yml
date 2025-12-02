@@ -1,24 +1,40 @@
-name: build StaffCloud
+name: build & test StaffCloud
 
 on:
   push:
-    branches: [ "Data_Management_Specialist" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "Data_Management_Specialist"]
+    branches: [ "main" ]
+
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build StaffCloud
-        run: gcc -Wall -Wextra -std=c11 -o staffcloud *.c
+      
+      - name: Build StaffCloud with coverage
+        run: |
+          gcc -Wall -Wextra -std=c11 --coverage -o staffcloud *.c
 
-      - name: Upload binary
+      - name: Run test suite
+        run: |
+          chmod +x test.sh
+          ./test.sh tee test_results.txt
+
+     
+      - name: Generate gcov coverage reports
+        run: gcov *.c
+
+    
+      - name: Upload artifacts (binary + coverage)
         uses: actions/upload-artifact@v4
         with:
-          name: StaffCloud
-          path: ./staffcloud
-
+          name: staffcloud-coverage
+          path: |
+            staffcloud
+            *.gcov
+            *.gcda
+            *.gcno
