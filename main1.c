@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "employee.h"
-#include "search.h"     
+#include "search_analytics.h"     
 #include "hierarchy.h" 
 
 void print_full_help(void) {
@@ -117,12 +117,12 @@ int main(int argc, char *argv[]) {
         }
 
         switch (choice) {
-        case 1: { // Print all employees
+        case 1: { 
             print_organization(&org);
             break;
         }
 
-        case 2: { // Search by ID
+        case 2: { 
             int id;
             printf("Enter employee ID: ");
             if (scanf("%d", &id) != 1) {
@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        case 3: { // Search by name
+        case 3: { 
             char name[64];
             printf("Enter part of first or last name: ");
             if (!fgets(name, sizeof(name), stdin)) {
@@ -154,7 +154,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        case 4: { // Search by department
+        case 4: {
             char dept[64];
             printf("Enter part of department name: ");
             if (!fgets(dept, sizeof(dept), stdin)) {
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        case 5: { // Search by salary range
+        case 5: { 
             float minS, maxS;
             printf("Enter minimum salary: ");
             if (scanf("%f", &minS) != 1) {
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        case 6: { // Org chart from CEO
+        case 6: { 
             Employee *ceo = find_ceo(org.list, org.count);
             if (!ceo && org.count > 0) {
                 ceo = &org.list[0]; 
@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        case 7: { // Chain of command for an employee
+        case 7: {
             int id;
             printf("Enter employee ID: ");
             if (scanf("%d", &id) != 1) {
@@ -219,7 +219,7 @@ int main(int argc, char *argv[]) {
             break;
         }
 
-        case 8: { // Highest & lowest paid
+        case 8: { 
             findHighestAndLowestSalary(&org);
             break;
         }

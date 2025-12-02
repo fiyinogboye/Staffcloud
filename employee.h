@@ -4,6 +4,7 @@
 #define NAME_LEN   50
 #define DEPART_LEN 50
 
+// Name the struct so we can use "struct Employee *" inside it
 typedef struct Employee {
     int id;
     char first[NAME_LEN];
@@ -12,10 +13,12 @@ typedef struct Employee {
     char department[DEPART_LEN];
     char role[16];
 
-    int manager_id;              
-    struct Employee *manager;    
-    struct Employee **children;  
-    int child_count; 
+    /* -------- hierarchy-related fields -------- */
+    int manager_id;              // -1 for CEO, otherwise id of manager
+    struct Employee *manager;    // pointer to direct manager
+    struct Employee **children;  // dynamic array of pointers to direct reports
+    int child_count;             // number of children
+    /* ------------------------------------------ */
 
 } Employee;
 

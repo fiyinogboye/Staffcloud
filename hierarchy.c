@@ -11,7 +11,7 @@ static void add_child(Employee *manager, Employee *child) {
     manager->child_count++;
     Employee **tmp = realloc(manager->children, manager->child_count * sizeof(Employee *));
     if (!tmp) {
-        fprintf(stderr, "Error\n");
+        fprintf(stderr, "Error: realloc failed in add_child.\n");
         exit(1);
     }
     manager->children = tmp;
@@ -26,7 +26,6 @@ Employee *find_ceo(Employee *list, int count) {
             return &list[i];
         }
     }
-
     return NULL;
 }
 
@@ -47,8 +46,8 @@ void build_hierarchy(Employee *list, int count) {
     if (!list || count <= 0) return;
 
     for (int i = 0; i < count; i++) {
-        list[i].manager = NULL;
-        list[i].children = NULL;
+        list[i].manager     = NULL;
+        list[i].children    = NULL;
         list[i].child_count = 0;
     }
 
@@ -81,10 +80,11 @@ void print_org_chart(Employee *e, int depth) {
     if (!e) return;
 
     for (int i = 0; i < depth; i++) {
-        printf("  ");  
+        printf("  ");   
     }
 
-    printf("%s %s (%s, ID %d)\n", e->first, e->last, e->role, e->id);
+    printf("%s %s (%s, ID %d)\n",
+           e->first, e->last, e->role, e->id);
 
     for (int i = 0; i < e->child_count; i++) {
         print_org_chart(e->children[i], depth + 1);

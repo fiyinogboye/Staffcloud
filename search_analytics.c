@@ -23,18 +23,17 @@ static int stringContains(const char *str, const char *substr) {
 
     return strstr(strLower, substrLower) != NULL;
 }
-
-Employee *findEmployeeById(Organization *org, int id) {
+Employee* findEmployeeById(const Organization *org, int id) {
     if (!org || !org->list) return NULL;
 
     for (int i = 0; i < org->count; i++) {
-        Employee *e = &org->list[i];
-        if (e->id == id) {
-            return e;
+        if (org->list[i].id == id) {
+            return &org->list[i];
         }
     }
     return NULL;
 }
+
 
 void displayEmployee(const Employee *emp) {
     if (emp == NULL) {
@@ -89,7 +88,7 @@ void searchEmployeesByDepartment(const Organization *org, const char *department
     }
 
     if (found == 0) {
-        printf("No employees found in department '%s'.\n", department);
+        printf("No employees found in the department '%s'.\n", department);
     }
 }
 
@@ -114,4 +113,32 @@ void searchEmployeesBySalaryRange(const Organization *org, float minSalary, floa
         printf("No employees found in salary range %.2f - %.2f\n",
                minSalary, maxSalary);
     }
+}
+
+void findHighestAndLowestSalary(const Organization *org) {
+    if (!org || !org->list || org->count == 0) {
+        printf("Organization is empty.\n");
+        return;
+    }
+
+    const Employee *minEmp = &org->list[0];
+    const Employee *maxEmp = &org->list[0];
+
+
+    for (int i = 1; i < org->count; i++) {
+        const Employee *e = &org->list[i];
+
+        if (e->salary < minEmp->salary) {
+            minEmp = e;
+        }
+        if (e->salary > maxEmp->salary) {
+            maxEmp = e;
+        }
+    }
+
+    printf("\nLowest paid employee:\n");
+    displayEmployee(minEmp);
+
+    printf("\nHighest paid employee:\n");
+    displayEmployee(maxEmp);
 }

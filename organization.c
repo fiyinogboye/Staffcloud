@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include "employee.h"
 
 static int count_lines(const char *filename) {
@@ -23,11 +24,13 @@ static int count_lines(const char *filename) {
 int load_organization(const char *filename, Organization *org) {
     org->list = NULL;
     org->count = 0;
+    
 
     int line_count = count_lines(filename);
 
     FILE *fp = fopen(filename, "r");
     Employee *list = malloc(line_count * sizeof(Employee));
+    
 
     int i;
     for (i = 0; i < line_count; i++) {
@@ -40,8 +43,7 @@ int load_organization(const char *filename, Organization *org) {
         }
 
         else {
-            fscanf(fp, "%d %49s %49s %f %49s",
-                   &e->id, e->first, e->last, &e->salary, e->department);
+            fscanf(fp, "%d %49s %49s %f %49s", &e->id, e->first, e->last, &e->salary, e->department);
 
             if (i >= 1 && i <= 3) {
                 strcpy(e->role, "Manager");
@@ -67,8 +69,7 @@ int load_organization(const char *filename, Organization *org) {
 
             for (int j = 1; j < line_count; j++) {
                 Employee *m = &list[j];
-                if (strcmp(m->role, "Manager") == 0 &&
-                    strcmp(m->department, e->department) == 0) {
+                if (strcmp(m->role, "Manager") == 0 && strcasecmp(m->department, e->department) == 0) {
                     e->manager_id = m->id;
                     break;
                 }
@@ -104,7 +105,7 @@ void print_organization(const Organization *org) {
 
     for (int i = 0; i < org->count; i++) {
         const Employee *e = &org->list[i];
-        printf("ID: %d  Name: %s %s  Role: %s  Salary: %.2f  Dept: %s\n",
-               e->id, e->first, e->last, e->role, e->salary, e->department);
+        printf("ID: %d  Name: %s %s  Role: %s  Salary: %.2f  Dept: %s\n", e->id, e->first, e->last, e->role, e->salary, e->department);
     }
 }
+
