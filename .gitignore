@@ -1,2 +1,5 @@
 *.o
+*.gcda
+*.gcno
+*gcov
 staffcloud
