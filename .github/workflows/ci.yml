@@ -26,15 +26,14 @@ jobs:
 
      
       - name: Generate gcov coverage reports
-        run: gcov *.c
+        run: make coverage
 
     
-      - name: Upload artifacts (binary + coverage)
+      - name: Upload artifacts (binary + coverage +test result)
         uses: actions/upload-artifact@v4
         with:
           name: staffcloud-coverage
           path: |
             staffcloud
             *.gcov
-            *.gcda
-            *.gcno
+            test_results.txt

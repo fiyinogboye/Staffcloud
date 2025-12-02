@@ -4,11 +4,9 @@
 
 #include "employee.h" 
 
-//case-insensitive substring check
 static int stringContains(const char *str, const char *substr) {
     if (str == NULL || substr == NULL) return 0;
 
-    // Make lowercase copies
     char strLower[128];
     char substrLower[128];
 
@@ -26,7 +24,6 @@ static int stringContains(const char *str, const char *substr) {
     return strstr(strLower, substrLower) != NULL;
 }
 
-// Find an employee by ID in an Organization
 Employee *findEmployeeById(Organization *org, int id) {
     if (!org || !org->list) return NULL;
 
@@ -38,8 +35,6 @@ Employee *findEmployeeById(Organization *org, int id) {
     }
     return NULL;
 }
-
-// Print a single employee's info
 
 void displayEmployee(const Employee *emp) {
     if (emp == NULL) {
@@ -54,7 +49,6 @@ void displayEmployee(const Employee *emp) {
     printf("Role: %s\n", emp -> role);
 }
 
-// Search by (first OR last) name
 void searchEmployeesByName(const Organization *org, const char *name) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
@@ -77,7 +71,6 @@ void searchEmployeesByName(const Organization *org, const char *name) {
     }
 }
 
-// Search by department
 void searchEmployeesByDepartment(const Organization *org, const char *department) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
@@ -100,9 +93,7 @@ void searchEmployeesByDepartment(const Organization *org, const char *department
     }
 }
 
-// Search by salary range (salary is float in your loader code)
-void searchEmployeesBySalaryRange(const Organization *org,
-                                  float minSalary, float maxSalary) {
+void searchEmployeesBySalaryRange(const Organization *org, float minSalary, float maxSalary) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
         return;
