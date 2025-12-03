@@ -3,6 +3,18 @@
 #include <ctype.h>
 
 #include "employee.h" 
+/*Ifeyinwa Mbielu, 400576045,03-12-2025
+*his file implements search and reporting utilities for employees 
+*within an Organization. It includes functions to find employees by ID, name, 
+department, or salary range, and a helper to perform case-insensitive string matching.
+
+
+*/
+
+/*stringContains Function
+*case-insensitive substring check
+*Returns 1 (true) if substr appears inside str ignoring case, otherwise returns 0.
+*/
 
 static int stringContains(const char *str, const char *substr) {
     if (str == NULL || substr == NULL) return 0;
@@ -23,7 +35,15 @@ static int stringContains(const char *str, const char *substr) {
 
     return strstr(strLower, substrLower) != NULL;
 }
-Employee* findEmployeeById(const Organization *org, int id) {
+
+
+/*findEmployeeById function
+*Find an employee by ID in an Organization
+*Returns a pointer to the matching Employee in org->list if found; returns NULL if no 
+*employee has that ID or the organization/list is invalid.
+*/
+Employee *findEmployeeById(Organization *org, int id) {
+
     if (!org || !org->list) return NULL;
 
     for (int i = 0; i < org->count; i++) {
@@ -33,6 +53,11 @@ Employee* findEmployeeById(const Organization *org, int id) {
     }
     return NULL;
 }
+
+/*displayEmployee function
+*Print a single employee's info
+*Returns nothing (void). It just prints the employee’s information to stdout.
+*/
 
 void displayEmployee(const Employee *emp) {
     if (emp == NULL) {
@@ -46,6 +71,11 @@ void displayEmployee(const Employee *emp) {
     printf("Salary: $%.2f\n", emp -> salary);
     printf("Role: %s\n", emp -> role);
 }
+/*searchEmployeesByName functon
+*Search by (first OR last) name
+Returns nothing. It prints all employees whose first or last name contains the given 
+*substring (case-insensitive), or a “not found” message.
+*/
 
 void searchEmployeesByName(const Organization *org, const char *name) {
     if (!org || !org->list) {
@@ -69,6 +99,12 @@ void searchEmployeesByName(const Organization *org, const char *name) {
     }
 }
 
+/*searchEmployeesByDepartment
+*Search by department
+*Returns nothing. It prints all employees whose department field contains the given 
+*substring, or a “not found” message.
+*/
+
 void searchEmployeesByDepartment(const Organization *org, const char *department) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
@@ -90,6 +126,13 @@ void searchEmployeesByDepartment(const Organization *org, const char *department
         printf("No employees found in the department '%s'.\n", department);
     }
 }
+
+
+/*searchEmployeesBySalaryRange
+*Search by salary range (salary is float in your loader code)
+*Returns nothing. It prints all employees whose salary is between minSalary and maxSalary 
+*(inclusive), or a message if none match.
+*/
 
 void searchEmployeesBySalaryRange(const Organization *org, float minSalary, float maxSalary) {
     if (!org || !org->list) {
@@ -113,6 +156,13 @@ void searchEmployeesBySalaryRange(const Organization *org, float minSalary, floa
                minSalary, maxSalary);
     }
 }
+
+
+/*findHighestAndLowestSalary Function
+*Find and display the lowest and highest paid employees
+*Returns nothing. It finds and prints the lowest-paid and highest-paid employees in the organization, 
+*or prints that the organization is empty.
+*/
 
 void findHighestAndLowestSalary(const Organization *org) {
     if (!org || !org->list || org->count == 0) {
