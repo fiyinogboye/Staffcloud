@@ -144,10 +144,6 @@ test "./staffcloud $ORG_FILE" 0 $'9\n8\n' "" ""
 # 4. Coverage (gcov)
 ############################################
 echo
-echo "== Generating gcov reports =="
-gcov main1.c organization.c search_analytics.c hierarchy.c
-
-echo
 echo "Total tests: $tc"
 echo "Failures   : $fails"
 

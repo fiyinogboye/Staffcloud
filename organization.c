@@ -1,3 +1,12 @@
+/*********************************************************************
+ * David Choi, choiy70, December 3rd
+ * 
+ * Functionality: The main function of this file is to serach for txt
+ * files, store and print the contents in the files and free an 
+ * organization’s employee data. 
+ * 
+ ********************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
