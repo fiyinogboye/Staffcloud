@@ -3,3 +3,5 @@
 *.gcno
 *gcov
 staffcloud
+gcov_report.txt
+test_results.txt
