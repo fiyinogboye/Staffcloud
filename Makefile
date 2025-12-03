@@ -26,7 +26,7 @@ $(TARGET): $(OBJS)
 # Run program on every .txt file, then generate gcov reports
 coverage: $(TARGET)
 	@echo "== Generating gcov reports =="
-	gcov $(SRCS)
+	gcov *.gcda
 
 run: $(TARGET)
 	@for f in $(INPUTS); do \

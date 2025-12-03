@@ -26,7 +26,7 @@ jobs:
       - name: Generate gcov coverage reports
 
         run: |
-          gcov *.c > gcov_report.txt
+          gcov *.gcda > gcov_report.txt
 
       - name: Upload artifacts (binary + coverage)
 
