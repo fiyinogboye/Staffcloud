@@ -139,6 +139,29 @@ test "./staffcloud $ORG_FILE" 0 $'7\n9999\n8\n' "" ""
 # T16: Invalid menu choice hits default case, then exit
 test "./staffcloud $ORG_FILE" 0 $'9\n8\n' "" ""
 
+# T17: Invalid menu input (non-numeric) triggers scanf error path for menu
+# then user enters a valid option (8) to exit.
+test "./staffcloud $ORG_FILE" 0 $'x\n8\n' "" ""
+
+# T18: Chain of command (option 7) with invalid (non-numeric) ID
+# exercises scanf error handling for that prompt.
+test "./staffcloud $ORG_FILE" 0 $'7\nabc\n8\n' "" ""
+
+# T19: Salary range (option 5) with bad max salary input
+# you already test bad *min* (T12); this hits the other scanf error path.
+test "./staffcloud $ORG_FILE" 0 $'5\n60000\nabc\n8\n' "" ""
+
+# T20: Salary range where min > max
+# exercises whatever validation/edge-case logic you added for swapped bounds.
+test "./staffcloud $ORG_FILE" 0 $'5\n70000\n60000\n8\n' "" ""
+
+# T21: Name search (option 3) with different case to stress
+# case-insensitive matching in search_analytics.c
+test "./staffcloud $ORG_FILE" 0 $'3\nhAnNaH\n8\n' "" ""
+
+# T22: Department search (option 4) using a substring (e.g., "ale" for "Sales")
+# also drives the stringContains helper in a slightly different way.
+test "./staffcloud $ORG_FILE" 0 $'4\nale\n8\n' "" ""
 
 ############################################
 # 4. Coverage (gcov)
