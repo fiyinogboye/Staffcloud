@@ -1,3 +1,11 @@
+/* hierarchy.h
+ *
+ * Function prototypes for working with the employee hierarchy.
+ *
+ * AUTHOR: Fiyin Ogboye
+ * DATE:   November 2025
+ * VERSION: 1.0
+ */
 #ifndef HIERARCHY_H
 #define HIERARCHY_H
 

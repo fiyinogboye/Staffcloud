@@ -1,3 +1,12 @@
+/* StaffCloud main program.
+ *
+ * Loads an organization from a file and provides
+ * a menu to explore employee data.
+ *
+ * AUTHOR: Team 39
+ * DATE:  November 2025
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
