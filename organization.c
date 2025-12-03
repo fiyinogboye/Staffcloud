@@ -4,6 +4,18 @@
 #include <strings.h>
 #include "employee.h"
 
+/*********************************************************************
+ * Function: count_lines
+ * 
+ * Functiionality: Counts the number of lines in a given text file
+ * 
+ * Parameters: 
+ * filename: a C string representing the path to a text file.
+ * 
+ * Return: Returns the number of lines or returns 0 if file
+ * could not be opened.
+ ********************************************************************/
+
 static int count_lines(const char *filename) {
     FILE *fp = fopen(filename, "r");
     if (!fp) {
@@ -20,6 +32,19 @@ static int count_lines(const char *filename) {
     fclose(fp);
     return count;
 }
+
+/*********************************************************************
+ * Function: load_organization
+ * 
+ * Parameters: 
+ * Organization *org: a pointer to a struct that will hold the entire 
+ * list of employees and the number of employees
+ * 
+ * Functiionality: Counts the number of lines in a given text file.
+ * 
+ * Return: Returns 0 when successful, and -1 if file errors occurred
+ ********************************************************************/
+
 
 int load_organization(const char *filename, Organization *org) {
     org->list = NULL;
@@ -87,14 +112,34 @@ int load_organization(const char *filename, Organization *org) {
     return 0; 
 }
 
+/*********************************************************************
+ * Function: free_organization
+ * 
+ * Functionality: Frees the dynamically allocated employee array 
+ * inside the Organization struct.
+ *
+ * org - pointer to Organization 
+ * 
+ * Returns: nothing
+ ************************************************************/
 void free_organization(Organization *org) {
-    if (!org) return;
+    if (!org) {
+        return;
+    }
 
     free(org->list);
     org->list = NULL;
     org->count = 0;
 }
 
+/************************************************************
+ * Function: print_organization
+ * 
+ * Functionality: Prints a list of all employees, showing
+ * their ID, name, role, salary, and department.
+ *
+ * Returns: Nothing
+ ************************************************************/
 void print_organization(const Organization *org) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");

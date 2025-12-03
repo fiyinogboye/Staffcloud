@@ -34,7 +34,6 @@ Employee* findEmployeeById(const Organization *org, int id) {
     return NULL;
 }
 
-
 void displayEmployee(const Employee *emp) {
     if (emp == NULL) {
         printf("No employee found.\n");
@@ -121,6 +120,7 @@ void findHighestAndLowestSalary(const Organization *org) {
         return;
     }
 
+
     const Employee *minEmp = &org->list[0];
     const Employee *maxEmp = &org->list[0];
 
@@ -142,3 +142,4 @@ void findHighestAndLowestSalary(const Organization *org) {
     printf("\nHighest paid employee:\n");
     displayEmployee(maxEmp);
 }
+

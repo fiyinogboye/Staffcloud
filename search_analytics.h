@@ -17,6 +17,8 @@ void searchEmployeesByName(const Organization *org, const char *name);
 void searchEmployeesByDepartment(const Organization *org, const char *department);
 void searchEmployeesBySalaryRange(const Organization *org, float minSalary, float maxSalary);
 void findHighestAndLowestSalary(const Organization *org);
+
+
 #endif
 
 
