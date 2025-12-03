@@ -14,7 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      
       - name: Build StaffCloud with coverage
         run: |
           gcc -Wall -Wextra -std=c11 --coverage -o staffcloud *.c
@@ -22,19 +21,25 @@ jobs:
       - name: Run test suite
         run: |
           chmod +x test.sh
-          ./test.sh tee test_results.txt
+          ./test.sh > test_results.txt
 
-     
       - name: Generate gcov coverage reports
-        run: gcov *.c
 
-    
+        run: |
+          gcov *.c > gcov_report.txt
+
       - name: Upload artifacts (binary + coverage)
+
         uses: actions/upload-artifact@v4
         with:
           name: staffcloud-coverage
           path: |
             staffcloud
             *.gcov
-            *.gcda
-            *.gcno
+
+            gcov_report.txt
+            test_results.txt
+
+
+
+

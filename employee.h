@@ -13,9 +13,9 @@ typedef struct Employee {
     char role[16];
 
     int manager_id;              
-    struct Employee *manager;    
+    struct Employee *manager;   
     struct Employee **children;  
-    int child_count; 
+    int child_count;            
 
 } Employee;
 

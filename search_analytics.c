@@ -4,11 +4,9 @@
 
 #include "employee.h" 
 
-//case-insensitive substring check
 static int stringContains(const char *str, const char *substr) {
     if (str == NULL || substr == NULL) return 0;
 
-    // Make lowercase copies
     char strLower[128];
     char substrLower[128];
 
@@ -25,21 +23,16 @@ static int stringContains(const char *str, const char *substr) {
 
     return strstr(strLower, substrLower) != NULL;
 }
-
-// Find an employee by ID in an Organization
-Employee *findEmployeeById(Organization *org, int id) {
+Employee* findEmployeeById(const Organization *org, int id) {
     if (!org || !org->list) return NULL;
 
     for (int i = 0; i < org->count; i++) {
-        Employee *e = &org->list[i];
-        if (e->id == id) {
-            return e;
+        if (org->list[i].id == id) {
+            return &org->list[i];
         }
     }
     return NULL;
 }
-
-// Print a single employee's info
 
 void displayEmployee(const Employee *emp) {
     if (emp == NULL) {
@@ -54,7 +47,6 @@ void displayEmployee(const Employee *emp) {
     printf("Role: %s\n", emp -> role);
 }
 
-// Search by (first OR last) name
 void searchEmployeesByName(const Organization *org, const char *name) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
@@ -77,7 +69,6 @@ void searchEmployeesByName(const Organization *org, const char *name) {
     }
 }
 
-// Search by department
 void searchEmployeesByDepartment(const Organization *org, const char *department) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
@@ -96,13 +87,11 @@ void searchEmployeesByDepartment(const Organization *org, const char *department
     }
 
     if (found == 0) {
-        printf("No employees found in department '%s'.\n", department);
+        printf("No employees found in the department '%s'.\n", department);
     }
 }
 
-// Search by salary range (salary is float in your loader code)
-void searchEmployeesBySalaryRange(const Organization *org,
-                                  float minSalary, float maxSalary) {
+void searchEmployeesBySalaryRange(const Organization *org, float minSalary, float maxSalary) {
     if (!org || !org->list) {
         printf("Organization is empty.\n");
         return;
@@ -124,3 +113,33 @@ void searchEmployeesBySalaryRange(const Organization *org,
                minSalary, maxSalary);
     }
 }
+
+void findHighestAndLowestSalary(const Organization *org) {
+    if (!org || !org->list || org->count == 0) {
+        printf("Organization is empty.\n");
+        return;
+    }
+
+
+    const Employee *minEmp = &org->list[0];
+    const Employee *maxEmp = &org->list[0];
+
+
+    for (int i = 1; i < org->count; i++) {
+        const Employee *e = &org->list[i];
+
+        if (e->salary < minEmp->salary) {
+            minEmp = e;
+        }
+        if (e->salary > maxEmp->salary) {
+            maxEmp = e;
+        }
+    }
+
+    printf("\nLowest paid employee:\n");
+    displayEmployee(minEmp);
+
+    printf("\nHighest paid employee:\n");
+    displayEmployee(maxEmp);
+}
+
