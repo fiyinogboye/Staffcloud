@@ -16,7 +16,7 @@ jobs:
 
       - name: Build StaffCloud with coverage
         run: |
-          gcc -Wall -Wextra -std=c11 --coverage -o staffcloud *.c
+          make
 
       - name: Run test suite
         run: |
