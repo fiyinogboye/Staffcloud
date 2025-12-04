@@ -1,3 +1,9 @@
+/* employee.h
+ *
+ * AUTHOR: David Choi 
+ * DATE:   November 2025
+ * 
+ */
 #ifndef EMPLOYEE_H
 #define EMPLOYEE_H
 

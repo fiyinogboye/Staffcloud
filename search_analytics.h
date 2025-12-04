@@ -1,3 +1,9 @@
+/* employee.h
+ *
+ * AUTHOR: Ifeyinwa Mbielu
+ * DATE:   November 2025
+ * 
+ */
 #ifndef SEARCH_ANALYTICS_H
 #define SEARCH_ANALYTICS_H
 
